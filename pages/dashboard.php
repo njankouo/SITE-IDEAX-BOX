@@ -1,15 +1,7 @@
 
-   <script src="../assets/js/tinymce.min.js" referrerpolicy="origin"></script>
-   <script>
-    tinymce.init({
-      selector: 'textarea',
-      plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
-    });
-  </script>
 
   
-</head>
+
 <style>
   div.material-table {
   padding: 0;
@@ -250,6 +242,368 @@ div.material-table table td:last-child {
 
 
 
+ <blockquote>
+    <h6 style="font-style: italic;font-weight:bold;font-size:25px;">Tableau de Bord Du Blog</h6>
+</blockquote>
+
+<div class="row">
+
+    <?php
+    $tables = [
+
+        'PUBLICATIONS' => 'posts',
+        'COMMENTAIRES' => 'comments',
+        'UTILISATEURS' => 'admin'
+    ];
+    ?>
+
+    <?php
+    foreach ($tables as $table_name => $table) {
+    ?>
+
+        <div class="col l4 m6 s12">
+            <div class="card darken-1" style="background: #085078;  
+background: -webkit-linear-gradient(to right, #85D8CE, #085078); 
+background: linear-gradient(to right, #85D8CE, #085078); 
+">
+                <div class="card-content white-text">
+                    <span class="card-title" style="font-family: forte;"><?= $table_name ?></span>
+                    <p>
+                        <?php $nombretable = inTable($table); ?>
+
+                        <a class="btn-floating btn-large waves-effect waves-light red-darken-3"><i class="material-icons">grade</i></a>
+                        Vous Avez <?= $nombretable[0] ?> Utilisateur(s)
+
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+    <?php
+    }
+    ?>
+   <?php
+if (isset($_POST['submit'])) {
+    $titre = htmlspecialchars(trim($_POST['titre']));
+    $contenu = htmlspecialchars(trim($_POST['contenu']));
+    // $image = $_POST['image'];
+    if (isset($_POST['status'])) {
+        $status = $_POST['status'];
+    }
+    $errors = [];
+
+    if (empty($titre) || empty($contenu)) {
+        $errors['empty'] = 'renseignez tous vos champs';
+    }
+    if (!empty($_FILES['image']['name'])) {
+        $file = $_FILES['image']['name'];
+        $extensions = ['.png', '.jpg', '.jpeg', '.gif', '.PNG', '.JPG', '.JPEG', '.GIF'];
+        $extension = strrchr($file, '.');
+        if (!in_array($extension, $extensions)) {
+            $errors['image'] = 'image non valide';
+        }
+    }
+
+    if (!empty($errors)) {
+?>
+
+        <div class="card red">
+            <div class="card-content white-text">
+                <?php
+
+                foreach ($errors as $error) {
+                    echo $error . "<br/>";
+                }
+                ?>
+            </div>
+        </div>
+<?php
+    } else {
+        post($titre, $contenu, $status);
+        $success = '';
+
+        if (!empty($_FILES['image']['name'])) {
+            post_img($_FILES['image']['tmp_name'], $extension);
+        } else {
+           $id = $pdo->lastInsertId();
+            //header('Location:index.php?page=post&id=' . $id);
+        }
+    }
+}
+
+
+?>
+    </div>
+<a class="waves-effect waves-light btn modal-trigger blue darken-3" href="#mod2" style="float:right;margin:20px;">LISTE DES  ADMINISTRATEUR</a>
+<div id="mod2" class="modal">
+    <div class="modal-content">
+      <h4>LISTE DES ADMINISTRATEURS</h4>
+     <div class="card">
+      <div class="card-content">
+         <table class="responsive-table">
+        <thead>
+          <tr>
+              <th>NOM</th>
+              <th>PRENOM</th>
+              <th>EMAIL</th>
+              <th>ROLE</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <?php
+        $liste=list_admin();
+
+?>
+        
+            <?php
+      foreach($liste as $list){
+        ?>
+          <tr>
+            <td><?=$list->nom?></td>
+            <td><?=$list->prenom?></td>
+            <td><?=$list->email?></td>
+            <td><?=$list->role?></td>
+          </tr>
+        <?php
+      }
+?>       
+        </tbody>
+      </table>
+      </div>
+     </div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+    </div>
+  </div>
+ <a class="waves-effect waves-light btn modal-trigger" href="#mod1" style="float:right;margin:20px;">ESPACE ADMINISTRATEUR</a>
+
+  <!-- Modal Structure -->
+  <?php
+if(isset($_POST['sub'])){
+  $nom=htmlspecialchars(trim($_POST['nom']));
+ 
+  $prenom=htmlspecialchars(trim($_POST['prenom']));
+   $email=htmlspecialchars(trim($_POST['email']));
+  $password=htmlspecialchars(trim($_POST['password']));
+  $role=htmlspecialchars(trim($_POST['role']));
+
+  if(empty($nom)|| empty($prenom)|| empty($email) || empty($password)||empty($role)){
+    $error=['renseignez les champs administrateurs svp'];
+  }if(!empty($error)){
+    ?>
+ <div class="card red">
+            <div class="card-content white-text">
+                <?php
+
+                foreach ($error as $errors) {
+                    echo $errors . "<br/>";
+                }
+                ?>
+            </div>
+        </div>
+
+<?php
+
+
+}else{
+  admin($nom,$prenom,$email,$password,$role);
+  }
+}
+
+?>
+  <div id="mod1" class="modal">
+    <div class="modal-content">
+      <h4>ESPACE ADMINISTRATEUR</h4>
+      <div class="row">
+    <form class="col s12" method="post">
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="nom" type="text" class="validate" name="nom">
+          <label for="nom"> Nom</label>
+        </div>
+        <div class="input-field col s6">
+          <input id="prenom" type="text" class="validate" name="prenom">
+          <label for="prenom">prenom</label>
+        </div>
+         <div class="input-field col s6">
+          <input id="email" type="text" class="validate" name="email">
+          <label for="email">email</label>
+        </div>
+        <div class="input-field col s6">
+          <input id="password" type="password" class="validate" name="password">
+          <label for="password">password</label>
+        </div>
+        <div class="input-field col s12">
+          <input id="role" type="text" class="validate" name="role">
+          <label for="role">role</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="waves-effect btn" type="submit" name="sub">valider</button>
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">close</a>
+    </div>
+  </div>
+  </div>
+      </form>    
+<div class="row">
+  <div id="man" class="col s12">
+    <div class="card material-table">
+      <div class="table-header">
+        <span class="table-title">
+         <h4 style="font-family:forte"> Liste Des Commentaires Et Publications</h4> </span>
+        <div class="actions">
+          <a href="#modal1" class="modal-trigger waves-effect btn-flat nopadding"><i class="material-icons">library_add</i></a>
+          <a href="#" class="search-toggle waves-effect btn-flat nopadding"><i class="material-icons">search</i></a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-content">
+          <div class="card-content">
+                            <table id="datatable" class="responsive-table">
+                                <thead>
+                                    <tr>
+                                        <th>TITRE PUBLICATION</th>
+                                        <th>COMMENTAIRE</th>
+                                        <th>ACTION</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <?php
+                                    $comment =  get_comment();
+
+                                    foreach ($comment as $comments) {
+
+                                    ?>
+                                        <tr id="commentaire_<?= $comments->id ?>">
+                                            <td><?= $comments->title ?> </td>
+
+
+                                            <td>
+                                                <?= substr($comments->comment, 0, 100)  ?>
+                                            </td>
+                                            <td>
+                                                <!-- &nbsp; <a id="<?= $comments->id ?>" class="btn-floating btn-small waves-effect waves-light white darken-4 tooltipped see_comment" data-position="top" data-tooltip="valider la publication"><i class="material-icons">done</i></a>
+                                                &nbsp; &nbsp; -->
+                                                
+                                                <a class="btn-floating btn-small waves-effect waves-light green-darken-4  modal-trigger tooltipped" href="#comments_<?= $comments->id ?>" data-position="top" data-tooltip="lire le commentaire">
+                                                    <i class="material-icons">more_vert</i>
+                                                </a>
+                                                <div id="comments_<?= $comments->id ?>" class="modal bottom-sheet">
+                                                    <div class="modal-content">
+                                                        <h4><?= $comments->title ?></h4>
+                                                        <p>Commentaire Poste par <strong><?= $comments->name . "(" . $comments->email . ")</strong><br/>Le " . date('d/m/y H:i', strtotime($comments->date)) ?></p>
+                                                        <hr>
+                                                        <p><?= nl2br($comments->comment) ?></p>
+                                                    </div>
+                                                    <div class="modal-footer   darken-4">
+                                                      
+                                                         <a href="#!" class="modal-close waves-effect waves-green btn-flat">close</a>
+   
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                    <?php
+                                    }
+
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+        </div>
+      </div>
+    
+  </div>
+
+  <div id="modal1" class="modal">
+    <div class="modal-header">
+  
+    <form class="col s12" method="POST">
+    <div class="modal-content">
+ <h4>PUBLICATION DU CONTENU</h4>
+     
+      <div class="row">
+        <div class="input-field col s6">
+            <input id="last_name" type="text" class="validate" name="titre">
+          <label for="last_name">Titre Publication</label>
+        </div>
+        
+        <div class="input-field col s6">
+          <select multiple name="status">
+      <option value="" disabled selected>Choose your option</option>
+      <option value="1"> Actif</option>
+      <option value="0">Inactif </option>
+    
+    </select>
+    <label>Status Publication</label>
+        </div>
+        <div class="row">
+      <div class="col s12 m12">
+         <div class="file-field input-field">
+      <div class="btn">
+        <span>Image</span>
+        <input type="file" name="image">
+      </div>
+      <div class="file-path-wrapper">
+        <input class="file-path validate" type="text">
+      </div>
+    </div>
+      </div>
+      <div class="col s12 m12">
+          <label for="textarea1">Contenu Publication</label>
+         <textarea id="textarea1" class="materialize-textarea" name="contenu"></textarea>
+        
+      </div>
+      </div>
+
+
+      </div>
+    </div>
+      <div class="modal-footer">
+         <button type="submit" class="btn waves-effect blue darken-4 white-text" name="submit" >publiez votre contenu</button>
+   
+    <a href="#!" class="modal-close btn waves-effect waves-light red darken-4"
+    > cancel</a>
+  </div>
+ </form>
+  
+  </div>
+ 
+          
+ </div>
+  </div>
+ 
+ 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="../assets/js/materialize.min.js"></script>
+<script>
+    $(document).ready(function(){
+    $('.sidenav').sidenav();
+  });
+</script>
+<script>
+   $(document).ready(function(){
+    $('.modal').modal({
+      dismissible:false
+    });
+  });
+</script>
+
+<script>
+  
+  $(document).ready(function(){
+    $('select').formSelect();
+  });
+</script>
+
+ 
   <script>
   (function(window, document, undefined) {
 
@@ -453,330 +807,3 @@ $(document).ready(function() {
   });
 });
 </script>
-
- 
-
-     <div class="row">
-    <div class="col s12 m4">
-      <div class="card  darken-1" style="background: #3a6186; 
-background: -webkit-linear-gradient(to right, #89253e, #3a6186);
-background: linear-gradient(to right, #89253e, #3a6186); 
-">
-        <div class="card-content white-text">
-          <span class="card-title">
-UTILISATEUR(S)</span>
-          <p>
-            <a class="btn-floating btn-large waves-effect waves-light red darken-4"><i class="material-icons">supervisor_account</i></a>
-        Vous Avez...Utilisateurs
-          </p>
-        </div>
-       
-      </div>
-    </div>
-     <div class="col s12 m4">
-      <div class="card  darken-1" style="background: #2C3E50;
-background: -webkit-linear-gradient(to right, #FD746C, #2C3E50);  
-background: linear-gradient(to right, #FD746C, #2C3E50);
-">
-        <div class="card-content white-text">
-          <span class="card-title">COMMENTAIRE(S)</span>
-          <p><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">insert_comment</i></a>
-        Vous Avez...commentaires</p>
-          
-        </div>
-      
-      </div>
-    </div>
-     <div class="col s12 m4">
-      <div class="card darken-1" style="background: #e96443; 
-background: -webkit-linear-gradient(to right, #904e95, #e96443);  
-background: linear-gradient(to right, #904e95, #e96443); 
-">
-        <div class="card-content white-text">
-          <span class="card-title">PUBLICATION(S)</span>
-          <p>
-            <a class="btn-floating btn-large waves-effect waves-light blue darken-4"><i class="material-icons">camera</i></a>
-        Vous Avez...commentaires
-          </p>
-        </div>
-       
-      </div>
-    </div>
-     </div>
-   <?php
-if (isset($_POST['submit'])) {
-    $titre = htmlspecialchars(trim($_POST['titre']));
-    $contenu = htmlspecialchars(trim($_POST['contenu']));
-    // $image = $_POST['image'];
-    if (isset($_POST['status'])) {
-        $status = $_POST['status'];
-    }
-    $errors = [];
-
-    if (empty($titre) || empty($contenu)) {
-        $errors['empty'] = 'renseignez tous vos champs';
-    }
-    if (!empty($_FILES['image']['name'])) {
-        $file = $_FILES['image']['name'];
-        $extensions = ['.png', '.jpg', '.jpeg', '.gif', '.PNG', '.JPG', '.JPEG', '.GIF'];
-        $extension = strrchr($file, '.');
-        if (!in_array($extension, $extensions)) {
-            $errors['image'] = 'image non valide';
-        }
-    }
-
-    if (!empty($errors)) {
-?>
-
-        <div class="card red">
-            <div class="card-content white-text">
-                <?php
-
-                foreach ($errors as $error) {
-                    echo $error . "<br/>";
-                }
-                ?>
-            </div>
-        </div>
-<?php
-    } else {
-        post($titre, $contenu, $status);
-        $success = '';
-
-        if (!empty($_FILES['image']['name'])) {
-            post_img($_FILES['image']['tmp_name'], $extension);
-        } else {
-           $id = $pdo->lastInsertId();
-            //header('Location:index.php?page=post&id=' . $id);
-        }
-    }
-}
-
-
-?>
-    </div>
-<a class="waves-effect waves-light btn modal-trigger blue darken-3" href="#mod2" style="float:right;margin:20px;">LISTE DES  ADMINISTRATEUR</a>
-<div id="mod2" class="modal">
-    <div class="modal-content">
-      <h4>LISTE DES ADMINISTRATEURS</h4>
-      <table class="responsive-table">
-        <thead>
-          <tr>
-              <th>NOM</th>
-              <th>PRENOM</th>
-              <th>EMAIL</th>
-              <th>ROLE</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <?php
-        $liste=list_admin();
-
-?>
-        
-            <?php
-      foreach($liste as $list){
-        ?>
-          <tr>
-            <td><?=$list->nom?></td>
-            <td><?=$list->prenom?></td>
-            <td><?=$list->email?></td>
-            <td><?=$list->role?></td>
-          </tr>
-        <?php
-      }
-
-?>
-          
-        </tbody>
-      </table>
-    </div>
-    <div class="modal-footer">
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
-    </div>
-  </div>
- <a class="waves-effect waves-light btn modal-trigger" href="#mod1" style="float:right;margin:20px;">ESPACE ADMINISTRATEUR</a>
-
-  <!-- Modal Structure -->
-  <?php
-if(isset($_POST['sub'])){
-  $nom=htmlspecialchars(trim($_POST['nom']));
- 
-  $prenom=htmlspecialchars(trim($_POST['prenom']));
-   $email=htmlspecialchars(trim($_POST['email']));
-  $password=htmlspecialchars(trim($_POST['password']));
-  $role=htmlspecialchars(trim($_POST['role']));
-
-  if(empty($nom)|| empty($prenom)|| empty($email) || empty($password)||empty($role)){
-    $error=['renseignez les champs administrateurs svp'];
-  }if(!empty($error)){
-    ?>
- <div class="card red">
-            <div class="card-content white-text">
-                <?php
-
-                foreach ($error as $errors) {
-                    echo $errors . "<br/>";
-                }
-                ?>
-            </div>
-        </div>
-
-<?php
-
-
-}else{
-  admin($nom,$prenom,$email,$password,$role);
-  }
-}
-
-?>
-  <div id="mod1" class="modal">
-    <div class="modal-content">
-      <h4>ESPACE ADMINISTRATEUR</h4>
-      <div class="row">
-    <form class="col s12" method="post">
-      <div class="row">
-        <div class="input-field col s6">
-          <input id="nom" type="text" class="validate" name="nom">
-          <label for="nom"> Nom</label>
-        </div>
-        <div class="input-field col s6">
-          <input id="prenom" type="text" class="validate" name="prenom">
-          <label for="prenom">prenom</label>
-        </div>
-         <div class="input-field col s6">
-          <input id="email" type="text" class="validate" name="email">
-          <label for="email">email</label>
-        </div>
-        <div class="input-field col s6">
-          <input id="password" type="password" class="validate" name="password">
-          <label for="password">password</label>
-        </div>
-        <div class="input-field col s12">
-          <input id="role" type="text" class="validate" name="role">
-          <label for="role">role</label>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="waves-effect btn" type="submit" name="sub">valider</button>
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">close</a>
-    </div>
-  </div>
-  </div>
-      </form>    
-<div class="row">
-  <div id="man" class="col s12">
-    <div class="card material-table">
-      <div class="table-header">
-        <span class="table-title">
-         <h4 style="font-family:forte"> Liste Des Commentaires Et Publications</h4> </span>
-        <div class="actions">
-          <a href="#modal1" class="modal-trigger waves-effect btn-flat nopadding"><i class="material-icons">library_add</i></a>
-          <a href="#" class="search-toggle waves-effect btn-flat nopadding"><i class="material-icons">search</i></a>
-        </div>
-      </div>
-      <table id="datatable">
-        <thead>
-          <tr>
-            <th>TITRE PUBLICATION</th>
-            <th>COMMENTAIRE</th>
-            <th>ACTION</th>
-            
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            
-          </tr>
-         
-        
-        </tbody>
-      </table>
-    
-  </div>
-
-  <div id="modal1" class="modal">
-    <div class="modal-header">
-  
-    <form class="col s12" method="POST">
-    <div class="modal-content">
- <h4>PUBLICATION DU CONTENU</h4>
-     
-      <div class="row">
-        <div class="input-field col s6">
-            <input id="last_name" type="text" class="validate" name="titre">
-          <label for="last_name">Titre Publication</label>
-        </div>
-        
-        <div class="input-field col s6">
-          <select multiple name="status">
-      <option value="" disabled selected>Choose your option</option>
-      <option value="1"> Actif</option>
-      <option value="0">Inactif </option>
-    
-    </select>
-    <label>Status Publication</label>
-        </div>
-        <div class="row">
-      <div class="col s12 m12">
-         <div class="file-field input-field">
-      <div class="btn">
-        <span>Image</span>
-        <input type="file" name="image">
-      </div>
-      <div class="file-path-wrapper">
-        <input class="file-path validate" type="text">
-      </div>
-    </div>
-      </div>
-      <div class="col s12 m12">
-          <label for="textarea1">Contenu Publication</label>
-         <textarea id="textarea1" class="materialize-textarea" name="contenu"></textarea>
-        
-      </div>
-      </div>
-
-
-      </div>
-    </div>
-      <div class="modal-footer">
-         <button type="submit" class="btn waves-effect blue darken-4 white-text" name="submit" >publiez votre contenu</button>
-   
-    <a href="#!" class="modal-close btn waves-effect waves-light red darken-4"
-    > cancel</a>
-  </div>
- </form>
-  
-  </div>
- 
-          
- </div>
-  </div>
- 
- 
-
-<script src="../assets/js/materialize.min.js"></script>
-<script>
-    $(document).ready(function(){
-    $('.sidenav').sidenav();
-  });
-</script>
-<script>
-   $(document).ready(function(){
-    $('.modal').modal({
-      dismissible:false
-    });
-  });
-</script>
-
-<script>
-  
-  $(document).ready(function(){
-    $('select').formSelect();
-  });
-</script>
-
- 

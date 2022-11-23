@@ -29,7 +29,7 @@ function post_img($tmp_name,$extension){
     
 
 }
-function   admin($nom,$email,$prenom,$password,$role){
+function   admin($nom,$prenom,$email,$password,$role){
     global $pdo;
     $ad=[
     'nom'=>$nom,
@@ -47,10 +47,29 @@ function   admin($nom,$email,$prenom,$password,$role){
 
 function list_admin(){
     global $pdo;
-    $req=$pdo->query('select * from admin');
+    $req=$pdo->query("select * from admin where role='admin'");
     $result=[];
     while($rows =$req->fetchObject()){
   $result[]=$rows;
     }
   return $result;
+}
+function inTable($table)
+{
+    global $pdo;
+
+    $query = $pdo->query("select count(id) from $table");
+    return $nombre = $query->fetch();
+}
+function get_comment()
+{
+    global $pdo;
+
+    $req = $pdo->query("select comments.id,comments.name,comments.email,comments.date,comments.post_id,comments.comment,posts.title from comments join posts ON comments.post_id=posts.id where comments.seen='0' order by comments.date asc");
+    $results = [];
+
+    while ($rows = $req->fetchObject()) {
+        $results[] = $rows;
+    }
+    return $results;
 }

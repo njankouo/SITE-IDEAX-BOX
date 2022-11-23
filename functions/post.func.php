@@ -26,13 +26,13 @@ function commentaire($nom, $comment,$email)
     global  $pdo;
 
     $a = array(
-            'nom' => $nom,
-        'email' => $email,
-        'comment' => $comment,
+     'nom' => $nom,
+    'email' => $email,
+    'comment' => $comment,
         
-       // 'post_id' => $_GET['id'],
+    'post_id' => $_GET['id'],
     );
-    $inser = 'insert into comments (name,email,comment,date) values(:nom,:email,:comment,NOW())';
+    $inser = 'insert into comments (name,email,comment,post_id,date) values(:nom,:email,:comment,:post_id,NOW())';
     $result = $pdo->prepare($inser);
     $result->execute($a);
 }

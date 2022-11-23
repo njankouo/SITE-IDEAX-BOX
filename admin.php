@@ -30,7 +30,7 @@ include 'functions/Connex.php';
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
     <title>IDEAS BOX</title>
-  
+  <link href="assets/img/logo.jpeg" rel="icon">
     <link rel="stylesheet" href="./assets/css/materialize.min.css">
     <!-- <link href="./assets/css/icon.css" rel="stylesheet"> -->
     <link rel="stylesheet" href="icon.css">
@@ -59,7 +59,8 @@ background: #c31432;
   
 	<div class="nav-wrapper">
 
-		<a href="#" class="brand-logo" style="font-family:forte">IDEAS BOX</a>
+		<a href="#" class="brand-logo" > <img src="assets/img/logo.jpeg" class="circle" alt="logo" height="50px" width:="25px;" style="margin: 3px;">
+                </a>
 
 		<a href="#" class="sidenav-trigger" data-target="mobile-nav">
 			<i class="material-icons">menu</i>
@@ -81,6 +82,15 @@ background: #c31432;
 include 'pages/'.$page.'.php';
   ?>
    <script src="assets/js/materialize.min.js"></script>
+   <?php
+$pages_js = scandir('assets/js/');
+if (in_array($page . '.func.js', $pages_js)) {
+
+    echo ('<script  src="js/' . $page . '.func.js"></script>');
+}
+?>
+
+</html>
 <script>
     $(document).ready(function(){
     $('.sidenav').sidenav();

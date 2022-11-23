@@ -66,8 +66,40 @@ if($post == false){
           }
           ?>
 <hr>
-    <h4>Commentaires:</h4>
- <?php
+    <h6>Commentaires</h6>
+       <div class="card">
+         <div class="card-content">
+                     <div class="row">
+                      <form method="post">
+       
+     
+        <div class="input-field col s6">
+          <input id="nom" type="text" class="validate" name="nom">
+          <label for="nom">Nom</label>
+        </div>
+         <div class="input-field col s6">
+          <input   type="email" class="validate" id="email" name="email">
+          <label for="">email</label>
+        </div>
+     
+        </div>
+        <div class="row">
+            <div class="col s12">
+                 <label for="comment">Votre Commentaire</label>
+                <textarea name="comment" id="comment" class="materialize-textarea"></textarea>
+               
+            </div>
+        </div>
+         </div>
+         <div class="card-action">
+              <button  type="submit" class=" btn btn"   name="submit">commenter </button>
+   
+         </div>
+                  
+                </div>
+   
+    <div class="col s4">
+<?php
           $commentaire = get_comment();
           if ($commentaire == false) {
             # code...
@@ -85,9 +117,9 @@ if($post == false){
 
 
               <ul class="collection">
-                <li class="collection-item avatar sky blue darken-4 white-text">
+                <li class="collection-item avatar white-text" style="background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);">
                   <div class="chip">
-                    <img src="./image/avartar.png" alt="newImage" class="circle">
+                    <img src="./assets/img/lion.png" alt="newImage" class="circle">
                     <span class="title"> <?= $commentaires->name ?></span>
                   </div>
                   <blockquote>
@@ -106,36 +138,9 @@ if($post == false){
 
 
           ?>
-    <div class="card">
-         <div class="card-content">
-                     <div class="row">
-                      <form method="post">
-        <div class="input-field col s6">
-          <input   type="email" class="validate" id="email" name="email">
-          <label for="">email</label>
-        </div>
-     
-     
-        <div class="input-field col s6">
-          <input id="nom" type="text" class="validate" name="nom">
-          <label for="nom">Nom</label>
-        </div>
-        </div>
-        <div class="row">
-            <div class="col s12">
-                 <label for="comment">Votre Commentaire</label>
-                <textarea name="comment" id="comment" class="materialize-textarea"></textarea>
-               
-            </div>
-        </div>
-         </div>
-         <div class="card-action">
-              <button  type="submit" class=" btn btn"   name="submit">commenter </button>
-   
-         </div>
-                  
-                </div>
     </div>
+  </div>
+ 
     <script src="../assets/js/materialize.min.js"></script>
 <script>
     $(document).ready(function(){

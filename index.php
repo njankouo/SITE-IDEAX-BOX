@@ -126,7 +126,9 @@ background: #c31432;
         <div class="container d-flex justify-content-between">
 
             <div class="logo">
-                <h1 style="font-style:italic;font-weight:bold;font-family: forte"><a href="#">IDEAX BOX</a></h1>
+           
+                    <img src="assets/img/logo.jpeg" alt="logo" class="rounded-circle" height="65px" width:="25px;">
+                
             </div>
 
             <nav id="navbar" class="navbar">
