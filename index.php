@@ -190,9 +190,6 @@ background: #c31432;
                                 ID Box a été fondée en 2018 par un jeune Camerounais, NSAHLAI MICHAEL VIDZEMFENYUY, passionné par la communication professionnelle et efficace.
                             </p>
                         </div>
-
-
-
                     </div>
                 </div>
 

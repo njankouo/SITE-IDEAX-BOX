@@ -25,9 +25,7 @@ function post_img($tmp_name,$extension){
  $sql = 'update posts set image=:image where id=:id';
     $req = $pdo->prepare($sql);
     $req->execute($i);
-    move_uploaded_file($tmp_name, '../assets/img/' . $id . $extension);
-    
-
+    move_uploaded_file($tmp_name, 'assets/img/' . $id . $extension);
 }
 function   admin($nom,$prenom,$email,$password,$role){
     global $pdo;

@@ -243,17 +243,27 @@ div.material-table table td:last-child {
 
 
  <blockquote>
-    <h6 style="font-style: italic;font-weight:bold;font-size:25px;">Tableau de Bord Du Blog</h6>
+    <h6 style="font-style: italic;font-weight:bold;font-size:25px;">Tableau de Bord Du Blog &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo 'BIENVENUE' ?>&nbsp;&nbsp;<?php echo '' .$_SESSION['admin']?></h6>
+    
 </blockquote>
 
 <div class="row">
+<?php
+if($page!='login' && !isset($_SESSION['admin'])){
+  ?>
+<script>
+  window.location.replace('admin.php?page=login');
+</script>
+  <?php
+}
 
+?>
     <?php
     $tables = [
 
         'PUBLICATIONS' => 'posts',
         'COMMENTAIRES' => 'comments',
-        'UTILISATEURS' => 'admin'
+        'ADMINISTRATEURS' => 'admin'
     ];
     ?>
 
@@ -267,12 +277,12 @@ background: -webkit-linear-gradient(to right, #85D8CE, #085078);
 background: linear-gradient(to right, #85D8CE, #085078); 
 ">
                 <div class="card-content white-text">
-                    <span class="card-title" style="font-family: forte;"><?= $table_name ?></span>
+                  
                     <p>
                         <?php $nombretable = inTable($table); ?>
 
                         <a class="btn-floating btn-large waves-effect waves-light red-darken-3"><i class="material-icons">grade</i></a>
-                        Vous Avez <?= $nombretable[0] ?> Utilisateur(s)
+                        <?= $nombretable[0] ?>   <span class="card-title" style="font-family: forte;"><?= $table_name ?></span>
 
                     </p>
                 </div>
@@ -296,12 +306,15 @@ if (isset($_POST['submit'])) {
     if (empty($titre) || empty($contenu)) {
         $errors['empty'] = 'renseignez tous vos champs';
     }
-    if (!empty($_FILES['image']['name'])) {
+    if (empty($_FILES['image']['name'])) {
+echo 'aucune image';
+
+    }else{
         $file = $_FILES['image']['name'];
         $extensions = ['.png', '.jpg', '.jpeg', '.gif', '.PNG', '.JPG', '.JPEG', '.GIF'];
         $extension = strrchr($file, '.');
         if (!in_array($extension, $extensions)) {
-            $errors['image'] = 'image non valide';
+            $errors['image'] = ['image non valide'];
         }
     }
 
@@ -325,8 +338,14 @@ if (isset($_POST['submit'])) {
 
         if (!empty($_FILES['image']['name'])) {
             post_img($_FILES['image']['tmp_name'], $extension);
+            // var_dump($_FILES['image']['name']);
+            // var_dump($extension);
+          
         } else {
+          
            $id = $pdo->lastInsertId();
+          //  var_dump($id);
+          //  echo 'ne marche pas';
             //header('Location:index.php?page=post&id=' . $id);
         }
     }
@@ -525,7 +544,7 @@ if(isset($_POST['sub'])){
   <div id="modal1" class="modal">
     <div class="modal-header">
   
-    <form class="col s12" method="POST">
+    <form class="col s12" method="POST" enctype="multipart/form-data">
     <div class="modal-content">
  <h4>PUBLICATION DU CONTENU</h4>
      

@@ -12,7 +12,7 @@ if($post == false){
     ?>
     </div>
 <div class="parallax-container">
-      <div class="parallax"><img src="../assets/img/<?=$post->image?>" alt="<?=$post->title?>"></div>
+      <div class="parallax"><img src="assets/img/<?=$post->image?>" alt="<?=$post->title?>"></div>
     </div>
     <div class="container">
 
